@@ -146,8 +146,30 @@ class YoutubeDownloaderGUI(ctk.CTk):
             "progress_hooks": [logger_hook],
             "quiet": True,
             "no_warnings": True,
-            "rm_cachedir": True,
-            "extractor_args": {"youtube": {"player_client": ["android", "web"]}},
+
+            # --- 403 FIX: don't wipe the cache dir every run ---
+            # rm_cachedir was deleting cached PO tokens / solved JS challenges
+            # every single run, forcing a fresh (and more failure-prone) solve
+            # each time. Removed intentionally.
+
+            # --- 403 FIX: retry logic ---
+            "retries": 10,
+            "fragment_retries": 10,
+            "extractor_retries": 3,
+
+            # --- 403 FIX: don't resume partial downloads ---
+            # Resuming with an expired signed URL is what caused the earlier
+            # "HTTP Error 403: Forbidden" on byte-resume.
+            "continuedl": False,
+
+            # --- 403 FIX: use browser cookies for a logged-in session ---
+            # Change "chrome" to "edge" or "firefox" if that's your default browser.
+            "cookiesfrombrowser": ("chrome",),
+
+            # --- 403 FIX: safer player clients ---
+            # "android" client has been flaky/blocked in 2026 YouTube changes.
+            # web_safari/tv/web work better with a JS runtime (deno) installed.
+            "extractor_args": {"youtube": {"player_client": ["web_safari", "tv", "web"]}},
         }
 
         try:
