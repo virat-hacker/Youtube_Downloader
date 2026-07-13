@@ -67,6 +67,7 @@ cd Youtube-Downloader-Suite
 
 # Install Python dependencies
 pip install yt-dlp customtkinter
+winget install DenoLand.Deno
 ```
 
 ---
